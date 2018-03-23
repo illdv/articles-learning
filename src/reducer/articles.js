@@ -13,6 +13,7 @@ export default (articleState = arrToMap(defaultArticles), action) => {
 
         case ADD_COMMENT:
             const article = articleState[payload.articleId]
+
             return {
                 ...articleState,
                 [payload.articleId]: {
