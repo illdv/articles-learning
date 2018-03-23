@@ -19,7 +19,8 @@
     "webpack-dev-server": "^2.0.0"
   },
   "scripts": {
-    "start": "concurrently \"react-scripts start\" \"npm run api\"",
+    "sia": "concurrently \"npm start\" \"npm run api\"",
+    "start": "react-scripts start",
     "api": "node simple_api/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
