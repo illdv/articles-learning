@@ -1,15 +1,22 @@
 import React from 'react';
 import CommentList from '../CommentList';
 import { connect } from 'react-redux';
-import { deleteArticle } from '../../AC'
+import { deleteArticle, loadArticle } from '../../AC'
 import PropTypes from 'prop-types';
+import Loader from '../Loader';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import './style.css';
 
-const Article = ({ article, isOpen, toggleOpen, deleteArticle }) => {
+class Article extends React.Component {
 
-    const body =
-        <CSSTransition
+    componentWillReceiveProps({ isOpen, loadArticle, article }) {
+        if (isOpen && !article.text && !article.loading) loadArticle(article.id)
+    }
+    getBody() {
+        const { article, isOpen } = this.props
+        if (!isOpen) return null
+        if (article.loading) return <Loader />
+        return (<CSSTransition
             classNames="article"
             timeout={{ enter: 500, exit: 300 }}
         >
@@ -17,36 +24,29 @@ const Article = ({ article, isOpen, toggleOpen, deleteArticle }) => {
 
                 <CommentList article={article} />
             </section>
-        </CSSTransition>
+        </CSSTransition>)
+    }
+    handleDelete = () => {
+        const { deleteArticle, article } = this.props
+        deleteArticle(article.id);
+    }
+    render() {
+        const { article, isOpen, toggleOpen } = this.props;
+        return (
+            < article >
+                <h3>{article.title} </h3>
+                <button onClick={toggleOpen}>
+                    {isOpen ? 'Hidden' : 'Show'}
+                </button>
+                <button onClick={this.handleDelete}>Delete me</button>
+                <TransitionGroup>
+                    {this.getBody()}
+                </TransitionGroup>
+            </article >
+        )
+    }
 
-
-
-    const handleDelete = () => deleteArticle(article.id);
-
-
-    return (
-        < article >
-            <h3>{article.title} </h3>
-            <button onClick={toggleOpen}>
-                {isOpen ? 'Hidden' : 'Show'}
-            </button>
-            <button onClick={handleDelete}>Delete me</button>
-            <TransitionGroup>
-                {isOpen ? body : null}
-            </TransitionGroup>
-        </article >
-    )
 }
-
-
-
-
-
-
-
-
-
-
 
 Article.propTypes = {
     article: PropTypes.shape({
@@ -58,4 +58,4 @@ Article.propTypes = {
     toggleOpen: PropTypes.func
 }
 
-export default connect(null, { deleteArticle })(Article)
+export default connect(null, { deleteArticle, loadArticle })(Article)
